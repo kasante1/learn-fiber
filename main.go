@@ -3,10 +3,10 @@ package main
 import (
     "log"
 
-    "github.com/gofiber/fiber/v3"
+    "github.com/gofiber/fiber/v2"
 )
 
-func helloWorld(c fiber.Ctx) error {
+func helloWorld(c *fiber.Ctx) error {
 	return c.SendString("hello world")
 }
 
