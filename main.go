@@ -1,37 +1,32 @@
 package main
 
 import (
-    "log"
+	// "fmt"
+	// "log"
+	"github.com/kasante1/learn-fiber/database"
+	"github.com/kasante1/learn-fiber/router"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	_ "github.com/lib/pq"
 
-    "github.com/gofiber/fiber/v2"
-	"github.com/kasante1/learn-fiber/book"
 )
 
-func helloWorld(c *fiber.Ctx) error {
-	return c.SendString("Hello, World 👋!")
-}
-
-func setUpRoutes(app *fiber.App) {
-	app.Get("/", helloWorld)
-
-	app.Get("/api/v1/book", book.GetBooks)
-	app.Get("/api/v1/book/:id", book.GetBook)
-	app.Post("/api/v1/book", book.NewBook)
-	app.Delete("/api/v1/book/:id", book.DeleteBook)
-
-}
 
 func main() {
     // Initialize a new Fiber app
+	database.Connect()
+
     app := fiber.New()
+	app.Use(logger.New())
+	app.Use(cors.New())
+	router.SetUpRoutes(app)
 
-	setUpRoutes(app)
-    // Define a route for the GET method on the root path '/'
-    // app.Get("/", func(c fiber.Ctx) error {
-    //     // Send a string response to the client
-    //     return c.SendString("Hello, World 👋!")
-    // })
+	app.Use(func(c *fiber.Ctx) error{
+		return c.SendStatus(404) // 404 not found
+	})
 
-    // Start the server on port 3000
-    log.Fatal(app.Listen(":3000"))
+	app.Listen(":8080")
+
+
 }
